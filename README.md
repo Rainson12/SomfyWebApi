@@ -1,19 +1,21 @@
 # SomfyWebApi
 Asp.net Core WebApi for controlling a Raspberry to close and open Somfy blinds
 
-
 # Build and Publish
-dotnet publish -c Release -r linux-arm
+`dotnet publish -c Release -r linux-arm`
 
 copy bin\Release\netcoreapp2.1\linux-arm\publish to raspberry pi
 
 # Setup Raspberry Pi with Nginx and .net core:
-sudo apt-get install curl libunwind8 gettext apt-transport-https
-chmod 755 ./SomPiWebApi
+`sudo apt-get install curl libunwind8 gettext apt-transport-https`
+
+`chmod 755 ./SomPiWebApi`
 
 sudo apt-get install nginx
 
-edit: /etc/nginx/sites-available/default
+edit: 
+`sudo nano /etc/nginx/sites-available/default`
+
 ```
 location / {
      proxy_pass http://localhost:5000/;
@@ -25,7 +27,7 @@ location / {
 }
 ```
 
-sudo nginx -s reload
+`sudo nginx -s reload`
 
 # Add Autostart of webapp
 create SomPiWebApi.service file in the /lib/systemd/system/
@@ -43,6 +45,7 @@ Restart=always
 ```
 
 `sudo systemctl enable SomPiWebApi`
+
 `sudo systemctl start SomPiWebApi`
 
 
