@@ -11,9 +11,9 @@ copy bin\Release\netcoreapp2.1\linux-arm\publish to raspberry pi
 
 `chmod 755 ./SomPiWebApi`
 
-sudo apt-get install nginx
+`sudo apt-get install nginx`
 
-edit: 
+edit: nginx config 
 `sudo nano /etc/nginx/sites-available/default`
 
 ```
@@ -27,6 +27,7 @@ location / {
 }
 ```
 
+restart nginx
 `sudo nginx -s reload`
 
 # Add Autostart of webapp
