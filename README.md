@@ -40,8 +40,8 @@ After=nginx.service
  
 [Service]
 Type=simple
-WorkingDirectory=/home/pi/apps/MyWebApp
-ExecStart=/home/pi/apps/MyWebApp/MyWebApp
+WorkingDirectory=/home/pi/SomPiWebApi
+ExecStart=/home/pi/SomPiWebApi/SomPiWebApi
 Restart=always
 ```
 
