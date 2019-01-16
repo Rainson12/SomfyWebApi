@@ -4,7 +4,7 @@ Asp.net Core WebApi for controlling a Raspberry to close and open Somfy blinds
 # Build and Publish
 `dotnet publish -c Release -r linux-arm`
 
-copy bin\Release\netcoreapp2.1\linux-arm\publish to raspberry pi
+copy bin\Release\netcoreapp2.1\linux-arm\publish to raspberry pi `home/pi/SomPiWebApi`
 
 # Setup Raspberry Pi with Nginx and .net core:
 `sudo apt-get install curl libunwind8 gettext apt-transport-https`
