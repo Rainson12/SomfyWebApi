@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using LiteDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SomPiWebApi.Helper;
@@ -38,24 +39,29 @@ namespace SomPiWebApi.Controllers
                 _action = SendAction.Stop;
             else if (action == "prog")
                 _action = SendAction.Prog;
-            var fileExists = System.IO.File.Exists("remotes/" + blindName + ".txt");
-            if (fileExists)
+
+            RemoteController remote = null;
+            using (var db = new LiteDatabase(@"remotes.db"))
             {
+                var remotes = db.GetCollection<RemoteController>("remotes");
+                remote = remotes.FindOne(x => x.Name == blindName);
+                if(remote == null)
+                {
+                    remote = new RemoteController() { CurrentCounter = 0, Id = remotes.FindAll().ToArray().Count() > 0 ? remotes.FindAll().ToArray().Max(x => x.Id) + 1 : 0, Name = blindName };
+                    remotes.Insert(remote);
+                }
                 try
                 {
-                    var lines = System.IO.File.ReadAllLines("remotes/" + blindName + ".txt");
-                    var remote = Convert.ToInt32(lines[0], 16);
-                    var rollCounter = int.Parse(lines[1]);
-                    new Commands().Send(remote, rollCounter, _action);
-                    System.IO.File.WriteAllLines("remotes/" + blindName + ".txt", new string[] { remote.ToString("X4"), (rollCounter + 1).ToString() });
+                    new Commands().Send(remote.Id, remote.CurrentCounter + 1, _action);
+                    remote.CurrentCounter++;
+                    remotes.Update(remote);
                     return "done";
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return ex.Message;
                 }
             }
-            return null;
         }
 
     }
