@@ -87,6 +87,53 @@ namespace SomPiWebApi.Controllers
                 }
             }
         }
+        [HttpPost, Route("{blindName}/SetId")]
+        public ActionResult SetId(string blindName, int id)
+        {
+
+
+            RemoteController remote = null;
+            using (var db = new LiteDatabase(@"remotes.db"))
+            {
+                var remotes = db.GetCollection<RemoteController>("remotes");
+                remote = remotes.FindOne(x => x.Name == blindName);
+                if (remote == null)
+                {
+                    remote = new RemoteController() { CurrentCounter = 0, Id = id, Name = blindName };
+                    remotes.Insert(remote);
+                }
+                try
+                {
+                    remote.Id = id;
+                    remotes.Update(remote);
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500);
+                }
+            }
+        }
+
+        [HttpDelete, Route("{blindName}")]
+        public ActionResult DeleteByName(string blindName)
+        {
+
+
+            RemoteController remote = null;
+            using (var db = new LiteDatabase(@"remotes.db"))
+            {
+                var remotes = db.GetCollection<RemoteController>("remotes");
+                remote = remotes.FindOne(x => x.Name == blindName);
+                if (remote == null)
+                {
+                    return NotFound();
+                }
+                remotes.Delete(remote.Id);
+
+            }
+            return Ok();
+        }
 
     }
 }
