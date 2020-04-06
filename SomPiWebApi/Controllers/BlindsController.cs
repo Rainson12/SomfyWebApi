@@ -16,15 +16,13 @@ namespace SomPiWebApi.Controllers
     public class BlindsController : Controller
     {
         [HttpGet]
-        public IEnumerable<string> GetBlindNames()
+        public IEnumerable<RemoteController> GetBlindNames()
         {
-            string[] remotes = Directory.GetFiles("remotes");
-            var blindNames = new List<string>();
-            foreach (var remote in remotes)
+            using (var db = new LiteDatabase(@"remotes.db"))
             {
-                blindNames.Add(Path.GetFileNameWithoutExtension(remote));
+                var remotes = db.GetCollection<RemoteController>("remotes");
+                return remotes.FindAll().ToList();
             }
-            return blindNames;
         }
 
         //https://www.thomaslevesque.com/2018/04/17/hosting-an-asp-net-core-2-application-on-a-raspberry-pi/
@@ -45,7 +43,7 @@ namespace SomPiWebApi.Controllers
             {
                 var remotes = db.GetCollection<RemoteController>("remotes");
                 remote = remotes.FindOne(x => x.Name == blindName);
-                if(remote == null)
+                if (remote == null)
                 {
                     remote = new RemoteController() { CurrentCounter = 0, Id = remotes.FindAll().ToArray().Count() > 0 ? remotes.FindAll().ToArray().Max(x => x.Id) + 1 : 0, Name = blindName };
                     remotes.Insert(remote);
@@ -60,6 +58,32 @@ namespace SomPiWebApi.Controllers
                 catch (Exception ex)
                 {
                     return ex.Message;
+                }
+            }
+        }
+        [HttpPost, Route("{blindName}/SetCounter")]
+        public ActionResult SetCounter(string blindName, int counter)
+        {
+           
+
+            RemoteController remote = null;
+            using (var db = new LiteDatabase(@"remotes.db"))
+            {
+                var remotes = db.GetCollection<RemoteController>("remotes");
+                remote = remotes.FindOne(x => x.Name == blindName);
+                if (remote == null)
+                {
+                    return NotFound();
+                }
+                try
+                {
+                    remote.CurrentCounter = counter;
+                    remotes.Update(remote);
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500);
                 }
             }
         }

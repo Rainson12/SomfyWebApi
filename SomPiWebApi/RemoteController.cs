@@ -1,6 +1,6 @@
 ﻿namespace SomPiWebApi.Controllers
 {
-    internal class RemoteController
+    public class RemoteController
     {
         public string Name { get; set; }
         public int Id { get; set; }
