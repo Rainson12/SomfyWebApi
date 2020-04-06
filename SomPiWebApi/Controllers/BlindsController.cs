@@ -50,7 +50,8 @@ namespace SomPiWebApi.Controllers
                 }
                 try
                 {
-                    new Commands().Send(remote.Id, remote.CurrentCounter + 1, _action);
+                    var remoteId = Convert.ToInt32(remote.Id.ToString(), 16);
+                    new Commands().Send(remoteId, remote.CurrentCounter + 1, _action);
                     remote.CurrentCounter++;
                     remotes.Update(remote);
                     return "done";
